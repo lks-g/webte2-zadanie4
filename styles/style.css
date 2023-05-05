@@ -1,121 +1,156 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,500;0,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Mono&display=swap');
 
+/********* TAGS **********/
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-body {
-    font-family: 'Roboto', sans-serif;
-    min-height: 100vh;
-}
-
-header {
-    background: #ffc107;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 2rem;
-    height: 50px;
-}
-
 h1 {
-    font-size: 4.2rem;
-    display: flex;
-    letter-spacing: -0.6rem;
-    font-weight: 900;
-    text-shadow: 8px 1px #ff8a26, 13px -2px #cd643c;
+    color: white;
 }
-h1 p {
-    margin-left: 2rem;
+
+body {
+    font-family: 'Noto Sans Mono', sans-serif;
+    min-height: 100vh;
+    background-color: #121212;
 }
 
 input[type="text"] {
-    width: 100%;
-    border: none;
+    display: block;
+    width: 30%;
+    border: 3px solid white;
     border-radius: .3rem;
-    height: 28.59px;
-    background: white;
+    height: 40px;
+    background: rgb(223, 223, 223);
     text-indent: 1rem;
-    color: #cd643c;
+    font-size: 24px;
+    color: black;
+    margin: 0 auto;
+    margin-top: 1%;
 }
 
 input[type="submit"] {
-    height: 28.59px;
-    background-color: #ff8a26;
+    display: block;
+    width: 20%;
+    height: 50px;
+    background-color: lightgreen;
     border-radius: .3rem;
     border: none;
-    color: white;
+    color: #252525;
     padding: 0 .5rem;
     cursor: pointer;
     font-weight: bolder;
+    font-size: 24px;
+    margin: 0 auto;
+    margin-top: 1%;
+    transition: 200ms ease-in-out box-shadow, 200ms ease-in-out width, 200ms ease-in-out height, 200ms ease-in-out font-size;
+}
+
+input[type="submit"]:hover {
+    box-shadow: 0 0 15px lightgreen;
+    width: 21%;
+    height: 51px;
+    font-size: 28px;
 }
 
 form {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-}
-
-#BC {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 1rem 0;
-}
-
-#D {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 1rem 0;
-}
-
-.hidden {
-    display: none !important;
-}
-
-#pocasie {
-    background-color: #ffc107;
-    display: flex;
-    flex-direction: column;
-    padding: 1rem;
-    gap: -1rem;
-    border-radius: .5rem;
-    justify-content: center;
     align-items: center;
 }
 
 table {
-    color: #fff;
-    background: #ffc107;
+    color: black;
+    background: lightblue;
     border-spacing: 0;
-    border-radius: .3rem;
+    border-radius: 5px;
     overflow: hidden;
+    margin-left: 2rem;
 }
 
 thead {
-    background-color: #ff8a26;
-}
-
-#pocasie img {
-    height: 120px;
-}
-
-.flag {
-    height: 40px;
+    background-color: lightskyblue;
 }
 
 tbody {
     color: #000;
 }
 
-td, th {
-    padding: .5rem;
+td,
+th {
+    padding: 10px;
+    font-size: 18px;
+    text-align: center;
+}
+
+table tr:nth-child(even) {
+    background-color: rgb(133, 203, 247);
+}
+
+/*********** ID **********/
+#top-bar {
+    background: lightskyblue;
+    color: white;
+    text-align: center;
+    padding-top: 1rem;
+    height: 80px;
+    text-shadow: 1px 1px 1px black;
+}
+
+#weather-info {
+    background-color: #252525;
+    border-radius: 15px;
+    width: 70%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 1rem 0;
+    margin: 0 auto;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+
+#visits-table {
+    background-color: #252525;
+    border-radius: 15px;
+    width: 70%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 1rem 0;
+    margin: 0 auto;
+    margin-bottom: 2%;
+}
+
+#weather {
+    background-color: lightskyblue;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    border-radius: .5rem;
+    justify-content: center;
+    align-items: center;
+}
+
+#weather img {
+    height: 120px;
 }
 
 #map {
-    height: 300px;
+    margin: 0 auto;
+    margin-top: 2%;
+    width: 70%;
+    height: 500px;
+    border: 5px solid white;
+    border-radius: 10px;
+    box-shadow: 0 0 15px white;
+}
+
+/******** CLASSES ********/
+.hidden {
+    display: none !important;
+}
+
+.flag {
+    height: 40px;
 }
