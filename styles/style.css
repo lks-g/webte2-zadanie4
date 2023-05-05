@@ -1,0 +1,121 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,500;0,700;1,900&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    min-height: 100vh;
+}
+
+header {
+    background: #ffc107;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 50px;
+}
+
+h1 {
+    font-size: 4.2rem;
+    display: flex;
+    letter-spacing: -0.6rem;
+    font-weight: 900;
+    text-shadow: 8px 1px #ff8a26, 13px -2px #cd643c;
+}
+h1 p {
+    margin-left: 2rem;
+}
+
+input[type="text"] {
+    width: 100%;
+    border: none;
+    border-radius: .3rem;
+    height: 28.59px;
+    background: white;
+    text-indent: 1rem;
+    color: #cd643c;
+}
+
+input[type="submit"] {
+    height: 28.59px;
+    background-color: #ff8a26;
+    border-radius: .3rem;
+    border: none;
+    color: white;
+    padding: 0 .5rem;
+    cursor: pointer;
+    font-weight: bolder;
+}
+
+form {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+#BC {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 1rem 0;
+}
+
+#D {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 1rem 0;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#pocasie {
+    background-color: #ffc107;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    gap: -1rem;
+    border-radius: .5rem;
+    justify-content: center;
+    align-items: center;
+}
+
+table {
+    color: #fff;
+    background: #ffc107;
+    border-spacing: 0;
+    border-radius: .3rem;
+    overflow: hidden;
+}
+
+thead {
+    background-color: #ff8a26;
+}
+
+#pocasie img {
+    height: 120px;
+}
+
+.flag {
+    height: 40px;
+}
+
+tbody {
+    color: #000;
+}
+
+td, th {
+    padding: .5rem;
+}
+
+#map {
+    height: 300px;
+}
