@@ -54,14 +54,15 @@ if (isset($_POST['city'])) {
     try {
         $db = new PDO("mysql:host=$hostname;dbname=$dbname;charset=utf8mb4", $username, $password);
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $ip = $_SERVER['REMOTE_ADDR'];
 
-        $stmt = $db->prepare("INSERT IGNORE INTO visits(city, state, date, code, lon, lat) VALUES(?, ?, ?, ?, ?, ?)");
+        $stmt = $db->prepare("INSERT IGNORE INTO visits(city, state, date, code, lon, lat, ip) VALUES(?, ?, ?, ?, ?, ?, ?)");
 
-        $stmt->execute([$_POST['city'], $state, $time, $code, $longitude, $latitude]);
+        $stmt->execute([$_POST['city'], $state, $time, $code, $longitude, $latitude, $ip]);
 
-        $stmt = $db->prepare("SELECT COUNT(id) as poc, state, `code` FROM visits GROUP BY state, code ORDER BY COUNT(id) DESC;");
+        $stmt = $db->prepare("SELECT COUNT(id) as sum, state, `code` FROM visits GROUP BY state, code ORDER BY COUNT(id) DESC;");
         $stmt->execute();
-        $D1 = $stmt->fetchAll();
+        $stateNum = $stmt->fetchAll();
 
         $stmt = $db->prepare("SELECT COUNT(id) FROM visits WHERE CAST(date AS TIME) BETWEEN '06:00' and '15:00'");
         $stmt->execute();
@@ -78,6 +79,10 @@ if (isset($_POST['city'])) {
         $stmt = $db->prepare("SELECT COUNT(id) FROM visits WHERE CAST(date AS TIME) BETWEEN '23:59' and '06:00'");
         $stmt->execute();
         $night = $stmt->fetch()[0];
+
+        $stmt = $db->prepare("SELECT city FROM visits ORDER BY date DESC LIMIT 1");
+        $stmt->execute();
+        $latestCity = $stmt->fetchColumn();
     } catch (PDOException $e) {
         echo $e->getMessage();
     }
@@ -101,26 +106,6 @@ if (isset($_POST['city'])) {
     <div id="top-bar">
         <h1>Weather Tracker</h1>
     </div>
-
-    <div id="map"></div>
-
-    <form action="index.php" method="post">
-        <input type="text" name="city" placeholder="Location">
-        <input type="submit" value="Submit">
-    </form>
-
-    <?php
-    try {
-        $db = new PDO("mysql:host=$hostname;dbname=$dbname;charset=utf8mb4", $username, $password);
-        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        $stmt = $db->prepare("SELECT city FROM visits ORDER BY date DESC LIMIT 1");
-        $stmt->execute();
-        $latestCity = $stmt->fetchColumn();
-    } catch (PDOException $e) {
-        echo $e->getMessage();
-    }
-    ?>
 
     <div class="<?php if (!isset($text)) echo 'hidden'; ?>" id="weather-info">
         <h1>Weather in <?php echo $latestCity; ?></h1>
@@ -147,7 +132,14 @@ if (isset($_POST['city'])) {
         </table>
     </div>
 
-    <div id="visits-table" class="<?php if (!isset($D1)) echo 'hidden'; ?>">
+    <div id="map"></div>
+
+    <form action="index.php" method="post">
+        <input type="text" name="city" placeholder="Location" required>
+        <input type="submit" value="Submit">
+    </form>
+
+    <div id="visits-table" class="<?php if (!isset($stateNum)) echo 'hidden'; ?>">
         <table>
             <thead>
                 <tr>
@@ -158,10 +150,11 @@ if (isset($_POST['city'])) {
             </thead>
             <tbody id="global-visits">
                 <?php
-                foreach ($D1 as $data) {
-                    echo '<tr><td>' . $data['poc'] . '</td> <td>' .
-                        $data['state'] . '</td> <td>  <img class="flag" src="https://www.geonames.org/flags/x/' .
-                        strtolower($data['code']) . '.gif"/></td></tr>';
+                foreach ($stateNum as $data) {
+                    echo '<tr><td>' . $data['sum'] . 
+                    '</td> <td>' . $data['state'] . 
+                    '</td> <td>  <img class="flag" src="https://www.geonames.org/flags/x/' .
+                    strtolower($data['code']) . '.gif"/></td></tr>';
                 }
                 ?>
             </tbody>
@@ -171,7 +164,7 @@ if (isset($_POST['city'])) {
             <thead>
                 <tr>
                     <th>City</th>
-                    <th>Number of visists</th>
+                    <th>Number of visits</th>
                 </tr>
             </thead>
             <tbody id="state-table"></tbody>
@@ -181,7 +174,7 @@ if (isset($_POST['city'])) {
             <thead>
                 <tr>
                     <th>Time of visit</th>
-                    <th>Number of visists</th>
+                    <th>Number of visits</th>
                 </tr>
             </thead>
             <tbody>
@@ -204,6 +197,7 @@ if (isset($_POST['city'])) {
             </tbody>
         </table>
     </div>
+    <footer>&copy; Lukáš Grúlik 2023</footer>
 
     <script src="scripts/script.js"></script>
 </body>

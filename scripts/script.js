@@ -1,7 +1,7 @@
-document.querySelectorAll('#global-visits tr').forEach(tr => tr.onclick = e => {
+document.querySelectorAll('#global-visits tr').forEach(td => td.onclick = e => {
     document.querySelector('#state-visits').classList.remove('hidden')
     const state = e.target.closest('tr').children[1].innerText;
-    fetch(`stateVisits.php?state=${state}`).then(res => res.json()).then(data => {
+    fetch(`./php/stateVisits.php?state=${state}`).then(res => res.json()).then(data => {
         const tbody = document.querySelector('#state-table')
         tbody.innerHTML = ''
         tbody.append(...data.map(d => {
@@ -12,11 +12,11 @@ document.querySelectorAll('#global-visits tr').forEach(tr => tr.onclick = e => {
     })
 })
 
-var map = L.map('map').setView([61.505, -10.09], 3);
+var map = L.map('map').setView([48.165064, 17.145673], 3);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-fetch('map.php').then(res => res.json()).then(data => {
+fetch('./php/map.php').then(res => res.json()).then(data => {
     data.forEach(ll => L.marker([ll[1], ll[0]]).addTo(map))
 })
