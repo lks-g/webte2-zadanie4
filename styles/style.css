@@ -123,6 +123,10 @@ footer {
     margin-bottom: 2%;
 }
 
+#weather-info h1 {
+    margin-left: 2rem;
+}
+
 #visits-table {
     background-color: #252525;
     border-radius: 15px;
@@ -162,8 +166,7 @@ footer {
 
 /******** CLASSES ********/
 .hidden {
-    display: none !important;
-
+    display: none;
 }
 
 .flag {

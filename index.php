@@ -2,6 +2,14 @@
 
 require_once('config.php');
 
+try {
+    $db = new PDO("mysql:host=$hostname;dbname=$dbname;charset=utf8mb4", $username, $password);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $ip = $_SERVER['REMOTE_ADDR'];
+} catch (PDOException $e) {
+    echo $e->getMessage();
+}
+
 if (isset($_POST['city'])) {
     $ch = curl_init(sprintf('%s?%s', 'http://api.positionstack.com/v1/forward', http_build_query([
         'access_key' => '4865b5b4f582ff44bb60e964c4c933f4',
@@ -52,37 +60,48 @@ if (isset($_POST['city'])) {
     $img = $apiResult["current"]['condition']['icon'];
 
     try {
-        $db = new PDO("mysql:host=$hostname;dbname=$dbname;charset=utf8mb4", $username, $password);
-        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $ip = $_SERVER['REMOTE_ADDR'];
 
-        $stmt = $db->prepare("INSERT IGNORE INTO visits(city, state, date, code, lon, lat, ip) VALUES(?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $db->prepare("SELECT COUNT(id) FROM visits WHERE ip = ?");
+        $stmt->execute([$ip]);
+        $ipCheck = $stmt->fetchColumn();
 
-        $stmt->execute([$_POST['city'], $state, $time, $code, $longitude, $latitude, $ip]);
+        if ($ipCheck == 0) {
+            $stmt = $db->prepare("INSERT INTO visits(date, ip) VALUES(?, ?)");
+            $stmt->execute([$time, $ip]);
+        }
 
-        $stmt = $db->prepare("SELECT COUNT(id) as sum, state, `code` FROM visits GROUP BY state, code ORDER BY COUNT(id) DESC;");
+        $stmt = $db->prepare("INSERT INTO results(city, state, date, code, lon, lat) VALUES(?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$_POST['city'], $state, $time, $code, $longitude, $latitude]);
+
+        $stmt = $db->prepare("SELECT COUNT(DISTINCT ip) AS unique_visits FROM visits;");
+        $stmt->execute();
+        $visits = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $stmt = $db->prepare("SELECT COUNT(id) as sum, state, `code` FROM results GROUP BY state, code ORDER BY COUNT(id) DESC;");
         $stmt->execute();
         $stateNum = $stmt->fetchAll();
 
-        $stmt = $db->prepare("SELECT COUNT(id) FROM visits WHERE CAST(date AS TIME) BETWEEN '06:00' and '15:00'");
+        $stmt = $db->prepare("SELECT COUNT(id) FROM results WHERE CAST(date AS TIME) BETWEEN '06:00' and '15:00'");
         $stmt->execute();
         $morning = $stmt->fetch()[0];
 
-        $stmt = $db->prepare("SELECT COUNT(id) FROM visits WHERE CAST(date AS TIME) BETWEEN '15:00' and '21:00'");
+        $stmt = $db->prepare("SELECT COUNT(id) FROM results WHERE CAST(date AS TIME) BETWEEN '15:00' and '21:00'");
         $stmt->execute();
         $afternoon = $stmt->fetch()[0];
 
-        $stmt = $db->prepare("SELECT COUNT(id) FROM visits WHERE CAST(date AS TIME) BETWEEN '21:00' and '23:59'");
+        $stmt = $db->prepare("SELECT COUNT(id) FROM results WHERE CAST(date AS TIME) BETWEEN '21:00' and '23:59'");
         $stmt->execute();
         $evening = $stmt->fetch()[0];
 
-        $stmt = $db->prepare("SELECT COUNT(id) FROM visits WHERE CAST(date AS TIME) BETWEEN '23:59' and '06:00'");
+        $stmt = $db->prepare("SELECT COUNT(id) FROM results WHERE CAST(date AS TIME) BETWEEN '23:59' and '06:00'");
         $stmt->execute();
         $night = $stmt->fetch()[0];
 
-        $stmt = $db->prepare("SELECT city FROM visits ORDER BY date DESC LIMIT 1");
+        $stmt = $db->prepare("SELECT city FROM results ORDER BY date DESC LIMIT 1");
         $stmt->execute();
         $latestCity = $stmt->fetchColumn();
+
+        $db = null;
     } catch (PDOException $e) {
         echo $e->getMessage();
     }
@@ -143,7 +162,7 @@ if (isset($_POST['city'])) {
         <table>
             <thead>
                 <tr>
-                    <th>Number of visits</th>
+                    <th>All visits</th>
                     <th>State</th>
                     <th>State Flag</th>
                 </tr>
@@ -151,10 +170,10 @@ if (isset($_POST['city'])) {
             <tbody id="global-visits">
                 <?php
                 foreach ($stateNum as $data) {
-                    echo '<tr><td>' . $data['sum'] . 
-                    '</td> <td>' . $data['state'] . 
-                    '</td> <td>  <img class="flag" src="https://www.geonames.org/flags/x/' .
-                    strtolower($data['code']) . '.gif"/></td></tr>';
+                    echo '<tr> <td>' . $data['sum'] .
+                        '</td> <td>' . $data['state'] .
+                        '</td> <td>  <img class="flag" src="https://www.geonames.org/flags/x/' .
+                        strtolower($data['code']) . '.gif"/></td></tr>';
                 }
                 ?>
             </tbody>
